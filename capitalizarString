@@ -1,0 +1,41 @@
+.data
+	string: .asciiz "meu professor e muito bom"
+	
+.text
+	li $t9, 32 		# t9 => CODIGO ASCII DO ESPACO
+	la $t0, string		# $t0 => ENDERCO INICIAL DA STRING
+	lb $t1, string		# t1 => VAI PEGAR O PRIMEIRO CARA DA STRING, LOGO PRA CPAITALIZAR ELA
+	addi $t1, $t1, -32	# t1 => letra capitalizada
+	sb $t1, ($t0)		# guardando a primeira letra capitalizada no endereco do primeiro char da string :)
+	j percorrer
+	
+percorrer:
+	#la $t0, string			# t0 => endereco do char atual
+	lb $t1, ($t0)			# t1 => char apontando pelo t0
+	beq $t1, $zero, fim		# t1 == 0 ? chegou no fim : ficaAqui
+	beq $t1, $t9, achouEspaco	# t1 == espaco ? achouEpsaco : ficaAqui
+	j incrementaEndereco
+	
+achouEspaco: 
+	#la $t4, ($t0)					
+	la $t5, 1($t0)			# t5 => vai pegar o endercco do n + 1 pra verificar se e espaco tbm
+	lb $t6, ($t5)			# t6 => pega o char no endereco ( n + 1 )
+	beq $t6, $t9, incrementaEndereco # SE O PROXIMO FOR ESPACO, AINDA TEM QUE CONTINUAR PROCURANDO A PROXIMA PRIMEIRA LETRA	
+	
+	addi $t6, $t6, -32
+	sb $t6, ($t5)
+	j incrementaEndereco		
+	
+incrementaEndereco:
+	addi $t0, $t0, 1		# t0 => proximo endereco
+	j percorrer	
+	
+fim:	li $v0, 4
+	la $a0, string
+	syscall
+	
+	li $v0, 10
+	syscall
+	
+	
+	

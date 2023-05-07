@@ -1,0 +1,19 @@
+.data
+	x: .word 7 #TEM QUE ACHAR O 7 TERMO NA SEQUENCIA DE FIBONACCI
+	y: .space 4
+
+.text
+	lui $t0, 0x1001
+	ori $t1, $zero, 0 #CONTADOR
+	lw $t2, 0($t0) # X
+	ori $t3, $zero, 1 # inicio fibonnaci
+	
+	
+Loop:	addi $t3, $t1, -1
+	addi $t3, $t1, -2 
+	addi $t1, $t1, 1 #INCREMENTANDO O CONTADOR
+	beq $t1, $t2, Exit
+	j Loop
+Exit:   sw $t3, 4($t0)
+
+	

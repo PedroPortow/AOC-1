@@ -1,0 +1,59 @@
+#a é uma palavra (word) de 32 bits que é inicializada com o valor inteiro 3.
+#b é outra palavra de 32 bits que é inicializada com o valor inteiro 5.
+#y é um espaço (space) de 4 bytes (32 bits) alocado na memória sem valor inicial.
+
+#As palavras são tipos de dados de 32 bits, enquanto que o espaço reservado pela diretiva 
+
+#.space é utilizado para alocar uma quantidade específica de bytes na memória, sem definir valores iniciais.
+
+
+# y = 32ab - 3a + 7b - 13
+
+
+
+.data
+	a: .word 3 #  0x10010000 => PRIMEIRO ENDEREÇO DE MEMÓRIA VAI SER SEMPRE NESSE ENDEREÇO
+	b: .word 5 #  0x10010004 => 4 POSIÇÕES DEPOIS :)
+	y: .space 4 #  0x10010008 => 4 + 4 POSIÇÕES DEPOIS NA MEMÓRIA
+	
+.text
+	lui $t0, 0x1001 # REGISTRADOR BASE => INICIALIZANDO REGISTRADOR BASE, COM O PRIMEIRO ENDEREÇO DE MEMÓRIA 1001! DECORAR ESSE NUMERO 0x1001
+	
+	lw $t1, 0x0($t0) #CARREGA T1 COM VALOR QUE O REGISTRADOR BASE ESTÁ APONTANDO (a)! (PORQUE 0X0 NÃO HÁ DESLOCAMENTO)
+	lw $t2, 0x4($t0) # carrega t2 com o valor que está 4 posições de memória depois, no caso o (b = 5)
+	
+	ori $t3, $zero, 32 # t3 = 32
+	addi $t4, $zero, -3  # t4 = -3
+	
+	ori $t5, $zero, 7 #t5 = 7
+	addi $t6, $zero, -13 # t6 = -13
+	
+	mult $t1, $t2
+	mflo $t7 # t7 = a*b
+	
+	mult $t7, $t3
+	mflo $t7  # t7 = 32*a*b
+	
+	mult $t4, $t1 
+	mflo $t4 # t4 = -3*a
+	
+	mult $t5, $t2
+	mflo $t5 # t5 = 7*b
+	
+	add $t7, $t7, $t4
+	add $t7, $t7, $t5
+	add $t7, $t7, $t6
+	
+	sw $t7, 0x8 ($t0)
+	
+	
+	
+
+	
+	
+
+	
+	
+
+		
+	

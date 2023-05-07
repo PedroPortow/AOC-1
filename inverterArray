@@ -1,0 +1,25 @@
+.data
+	array: .word 1,2,3,4,5
+	
+	# posicao final => 16
+.text
+	la $t0, array	# t0 => posicao inicial do array
+	la $t1, 16($t0)	# t1 => posicao final do array
+	li $t9, 0	# index contador
+	li $t8, 2	# tamanho do array / 2
+	
+loop:	beq $t9, $t8, fim
+	lw $t2, ($t0)	# t2 => posicao incial do array indo
+	lw $t3, ($t1) 	# t3 => posicao final do array
+	move $t4, $t2	# t4 => temp com o elemetndo do inicio
+	sw $t4, ($t1)   # elemento do inicio pro final
+	sw $t3 ($t0)
+	addi $t9, $t9, 1
+	addi $t0, $t0, 4
+	addi $t1, $t1, -4
+	j loop
+	
+fim:
+	
+
+	

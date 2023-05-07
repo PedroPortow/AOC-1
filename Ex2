@@ -1,0 +1,53 @@
+# 	REG SOLIDOS || REG TEMPS
+#	   $t0		 $t2
+#	   $t1		 $t3
+#	   $t7		 $t4
+#	   $t6		
+
+	
+
+
+
+.data
+	array: .word 2, 4, 5, 6, 8 
+	
+.text
+	lui $t0, 0x1001		# t0 => REG BASE
+	ori $t1, $zero, 0	# t1 => I
+	ori $t6, $zero, 0	# t6 => RESULTADO DE CADA INCREMENTACAO X A OUTRA
+	
+Loop:	slti $s0, $t1, 6
+	beq  $s0, $zero, Exit
+	slt $t2, $zero, $t1 	# 0 < I		( 1 => I NÃO VAI SER 0 \\ 0 => I É 0 )
+	beq $t2, $zero, Primeiro
+	addi $t0, $t0, 4	# t0 => t0 + 4
+	lw $t3, 0($t0)		# t3 => n
+	srl $t4, $t1, 1		# t4 => i / 2 
+	add $t2,$t3, $t4	# t2 => n + i / 2
+	mult $t6, $t2
+	mflo $t6		# t6 = t6 x ( n + i / 2)
+	addi $t1, $t1, 1
+	j Loop
+	  
+	
+	
+Primeiro: lw $t2, 0($t0)	# t2 => n
+	  srl $t3, $t1, 1	# t3 => i/2
+	  add $t6, $t2, $t3	# t7
+	  addi $t1, $t1, 1
+	  j Loop
+Exit:	lui $t0, 0x1001
+	sw $t6, 4($t0)
+	  
+	  
+	  
+
+	
+	
+	
+	
+	
+	
+	
+
+	

@@ -1,0 +1,13 @@
+#LOAD WORD => CARREGA UMA WORD DE 32 BITS DA MEMORIA PARA UM REGISTRADROR
+#STORE WORD => ARREGA UMA WORD DE 32 BITS DE UM REGISTRADOR PARA MEMORIA
+
+# lw $t3, 100($t2) 
+# $t3 = vai receber o resultado 
+# 100 = deslocamento
+# $t2 = registrador base
+# BASE + DESLOCAMENTO DEVE SER MULTIPLO DE 4
+
+# lh => carrega uma halfword (16 bits) para um regitrador
+# sh => carrega uma halfword (16 bits) para a memoria
+
+lw $t3, -8($t0)

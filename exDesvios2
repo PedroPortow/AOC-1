@@ -1,0 +1,16 @@
+.data
+	y: .space 4
+	
+.text
+	lui $t0, 0x1001
+	ori $t2, $zero, 1 #INCREMENTADOR
+	ori $t8, $zero, 1 #ENDEREÇO CONTANDO 1 PRA COMPARAÇÃO
+
+	
+	
+
+Loop: 	slti $t7, $t2, 333
+	bne $t8, $t7, Exit
+	addi $t2, $t2, 1
+	j Loop
+Exit:	sw $t2, 0($t0)

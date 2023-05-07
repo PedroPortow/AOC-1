@@ -1,0 +1,77 @@
+.data
+	a: .word -3
+	b: .word 7
+	c: .word -5
+	d: .word -2
+	e: .word 8
+	x: .word 4
+	y: .space 4
+	
+.text 
+
+	# - ax^4 + bx^3- cx^2 + dx - e
+	
+	lui $t0, 0x1001  # T0 = REG BASE
+	lw $t1, 0($t0)   # t1 => a = -3
+	lw $t2, 4($t0)   # t2 => b = 7
+    	lw $t3, 8($t0)   # t3 => c = 5
+    	lw $t4, 12($t0)  # Carrega o valor de d
+    	lw $t5, 16($t0)  # Carrega o valor de e
+    	lw $t6, 20($t0)  # Carrega o valor de x
+    	
+    	mult $t6, $t6
+    	mflo $t7 # 4 x 4
+    	
+    	mult $t6, $t6
+    	mflo $t7 # 4 x 4 x 4
+    	
+    	mult $t6, $t6 
+    	mflo $t7 # 4 x 4 x 4 x 4
+    	
+    	mult $t1, $t7
+    	mflo $t1             			# t1 = -ax^4
+    	
+    	
+    	mult $t6, $t6
+    	mflo $t7 # 4 x 4
+    	
+    	mult $t6, $t6
+    	mflo $t7 # 4 x 4 x 4 
+    	
+    	mult $t7, $t2
+    	mflo $t2        			# t2 = bx^3 
+    	
+    		
+    	mult $t6, $t6
+    	mflo $t7 # 4 x 4
+    	
+    	mult $t7, $t3
+    	mflo $t7                          	# t7 = - cx^2
+    	
+    	mult $t4, $t6
+    	mflo $t4      				# t4 = dx
+    	
+    	nor $t5, $t5, $zero 
+    	addi $t5, $t5, 1    			#t5 = -e
+    	
+    	add $t1, $t1, $t2
+    	add $t1, $t1, $t7
+    	add $t1, $t1, $t4
+    	add $t1, $t1, $t5
+    	
+    	sw $t1, 24($t0)
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+    	
+	
+	
+	

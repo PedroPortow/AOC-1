@@ -1,0 +1,160 @@
+.data
+	tarefas: .space 320	# CADA TAREFA 32 DE 31 CARACTERES + 1 (valor nulo)	# 10 tarefas de espaco 32
+	cont: .word 0		# contador de tarefas
+	menu: .asciiz "\nSelecione uma opção:\n1. Adicionar tarefa\n2. Excluir tarefa\n3. Listar tarefas\n4. Sair\n"
+	prompt: .asciiz "Digite a tarefa (até 31 caracteres)> "
+	texto_deletar: .asciiz "\nQual tarefa deseja deletar? (digite o numero) >  "
+	texto_tarefa_invalida: .asciiz "Essa tarefa nao esta na lista!"
+	sem_tarefas_texto: .asciiz "\nNão há nenhuma tarefa cadastrada!"
+	separador: .asciiz " - "
+	deletada_texto: .asciiz "Tarefa deletada com sucesso"
+	tchau: .asciiz "\nAté mais! :)"
+.text
+
+main:
+	li $v0, 4       	# $v0 = código impressão string
+    	la $a0, menu		# $a0 = endereço da string pra impressao
+    	syscall
+
+    	li $v0, 5   		# $v0 = código pra ler o inteiro selecioando no menu
+    	syscall	
+    	
+
+    	beq $v0, 1, add_tarefa
+   	beq $v0, 2, deletar_tarefa
+   	beq $v0, 3, listar_tarefas
+   	beq $v0, 4, sair
+
+   	 # Caso opção invalida, volta pro loop do menu
+    	j main
+    	
+add_tarefa:
+	la $t0, tarefas		# t0 => endereco do array
+	lw $t1, cont		# t1 => contador de tarefas
+	
+	sll $t2, $t1, 5		# t2 => offset do array (multiplicando por 32)
+	addu $t2, $t0, $t2	# t2 => endereco + offset
+	
+	li $v0, 4		# printando prompt
+	la $a0, prompt
+	syscall
+	
+	li $v0, 8		# codigo pra ler string
+	la $a0, ($t2)		# endereco com o offset
+	li $a1, 16		# tamanho da string
+	syscall
+	
+	addi $t1, $t1, 1 	# cont + 1
+	sw $t1, cont		# guardando o cont atualizado
+	j main
+	
+listar_tarefas:
+	la $t0, tarefas		# t0 => endereco do array
+	lw $t1, cont		# t1 => contador de tarefas
+	li $t2, 0		# t2 => INDICE LOOP ARRAY
+	
+	beq $t1, $zero, tarefas_vazias
+	
+	loop:
+		beq $t1, $t2, verifica_origem	# fim do loop
+		addi $t3, $t2, 1		# pra printar certo o indice
+ 
+ 		li $v0, 1		# printando indice
+ 		move $a0, $t3
+ 		syscall
+ 		
+ 		li $v0, 4
+ 		la $a0, separador
+ 		syscall
+		
+		li $v0, 4		# printando string
+		la $a0, ($t0)
+		syscall
+		
+		addi $t0, $t0, 32	# pegar a proxima string
+		addi $t2, $t2, 1	# incrementando index do loop
+	
+		j loop
+		
+verifica_origem:
+	beq $ra, $zero, main
+	jr $ra
+		
+deletar_tarefa:
+	lw $t1, cont		# t1 => contador de tarefas
+	beq $t1, $zero, tarefas_vazias
+	
+	jal listar_tarefas
+	move $ra, $zero
+	
+	la $t0, tarefas		# t0 => endereco do array
+	lw $t1, cont		# t1 => contador de tarefas
+	addi $t3, $t1, 1	# t3 => cont + 1 pra comparacao
+	
+	li $v0, 4		# printando string
+	la $a0, texto_deletar
+	syscall
+	
+	li $v0, 5		# codigo pra ler inteiro
+	syscall
+	
+	addi $v0, $v0, -1	# subtraindo por 1 pra pegar o numero certo
+	
+	slt $t2, $v0, $t3	# numero lido < cont + 1 ( pra dar certo a comparcao) ? t2 => 1 : t2 => 0
+	beq $t2, $zero, tarefa_invalida
+	
+	achar_tarefa_deletar:
+		# cont - 1 no fial
+		sll $t3, $v0, 5		# multiplicando a tarefa selecionada por 32 pra pegar o offset
+		addu $t0, $t0, $t3 	# t0 => endereco somado com o offset (pra pegar tarefa a ser deletada)
+		move $t7, $v0		# t7 => index da tarefa a ser deletada
+		sub $t9, $t1, $t7 	# t9 => quantidades de vezes que o loop vai ter q ser executado
+		li $t8, 0		# t8 => index do loop_deletar usado pra comparacao
+		
+		loop_deletar:
+			# t0 => inicio da tarefa a ser deletada, tem que somar 32 pra pegar a proxima tarefa e trazer ela pra ca ate o final
+			# t1 => cont
+			beq $t9, $t8, tarefa_deletada
+			
+			
+			addi $t4, $t0, 32	# t4 => endereco proxima tarefa
+			lw $t5, ($t4)		# t5 => proxima tarefa
+			
+			sw $t5, ($t0) 		# PROXIMA TAREFA PUXADA PRA TRAS (na primeira iteracao a tarefa a ser deletada vai ser overwrited)
+			addi $t0, $t0, 32	# t0 => endereco da proxima tarefa pra vir puxando todas pra tras
+			addi $t8, $t8, 1
+			j loop_deletar		
+			
+	tarefa_deletada:
+		li $v0, 4		# printando string
+		la $a0, deletada_texto
+		syscall
+		
+		addi $t1, $t1, -1	# diminuindo cont e guardando ele
+		sw $t1, cont
+		
+		j main
+		
+tarefas_vazias:
+	li $v0, 4			# printando string
+	la $a0, sem_tarefas_texto
+	syscall
+
+	j main
+	
+	
+tarefa_invalida:
+	li $v0, 4			# printando string
+	la $a0, texto_tarefa_invalida
+	syscall
+
+	j main
+	
+sair: 
+	li $v0, 4			# printando string
+	la $a0, tchau
+	syscall
+	
+	li $v0, 10
+	syscall
+	

@@ -1,0 +1,20 @@
+	ori $t0, $zero, 50 #temperatura
+	ori $t8, $zero, 1 #flag comparacao
+
+	slti $t1, $t0, 40 # SE A TEMPERATURA FOR MENOR QUE 40, T1 VAI PRA 1
+	beq $t1, $t8, Intervalo20
+	slti $t1, $t0, 80
+	beq $t1, $t8, Intervalo60 
+
+	
+
+Intervalo20: 	slti $t1, $t0, 20
+		beq $t1, $zero, Exit
+		j NaoValido
+		
+Intervalo60:	slti $t1, $t0, 60
+		beq $t1, $zero, Exit 
+		j NaoValido
+				
+NaoValido: 
+Exit: 

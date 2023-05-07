@@ -1,0 +1,41 @@
+#	REG TEMPS \\ REG SOLIDOS
+#	  $t1		$t0
+#	  $t2		t3
+#	  t4
+#-
+#
+
+
+
+.data	
+	a: .word 3
+	b: .word 2
+	c: .word 6
+	resultado: .word 0
+
+.text
+	lui $t0, 0x1001 # REG BASE
+	ori $t1, $zero, 0 # t1 = index
+	ori $t3, $zero, 0 # t3 = valores
+	
+
+Loop:	slti $t2, $t1, 4 	   # t2 = RESPOSTA TESTE 
+	beq $t2, $zero, Exit 
+	slt $t2, $zero, $t1 	# 0 < I		( 1 => I NÃO VAI SER 0 \\ 0 => I É 0 )
+	beq $t2, $zero, Primeiro
+	addi $t0, $t0, 4
+	lw $t4, 0($t0)		# t4 = resultado pra ser somado com t3
+	add $t3, $t3, $t4
+	addi $t1, $t1, 1
+	j Loop
+	
+Primeiro:	lw $t3, 0($t0)
+		addi $t1, $t1, 1
+		j Loop
+	  	
+Exit:	div $t3, $t1
+	mflo $t3
+	lui $t0, 0x1001
+	addi $t0, $t0, 12
+	sw $t3, 0($t0)
+	

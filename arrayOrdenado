@@ -1,0 +1,20 @@
+.data
+	array: .word 1, 2, 3, 4, 5, 6, 7, 23, 8, 9
+	
+
+.text
+	li $t0, 1		# t0 => flag
+	li $t1, 0		# t1 => index contador do array
+	la $t2, array		# t2 => enderco incial do array
+	li $t9, 10		# t9 => tamanho do array
+loop:
+	beq $t1, $t9, fim
+	lw $t3, ($t2)		# t3 => elemento na posicao t2
+	lw $t4, 4($t2)		# t4 => elemento na posica t2 + 1
+	slt $t7, $t3, $t4	# n < n + 1 ? t7 = 1 : t7 = 0
+	beq $t7, $zero, naoOrdenado
+	
+L
+	
+	
+	
